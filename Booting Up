@@ -1,69 +1,46 @@
-local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
+"Booting Up"
 
+local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 
---==================================================
--- REMOVE OLD
---==================================================
-
-pcall(function()
-	local Old = CoreGui:FindFirstChild("MiniLibraryBoot")
-	if Old then
-		Old:Destroy()
-	end
-end)
+local Library = {}
 
 --==================================================
--- BOOT GUI
+-- BOOTING UP ANIMATION
 --==================================================
 
 local BootGui = Instance.new("ScreenGui")
-BootGui.Name = "MiniLibraryBoot"
+BootGui.Name = "LibraryBoot"
 BootGui.ResetOnSpawn = false
 BootGui.Parent = CoreGui
 
-local Boot = Instance.new("Frame")
-Boot.Size = UDim2.fromOffset(230,120)
-Boot.Position = UDim2.new(0.5,-115,0.5,-60)
-Boot.BackgroundColor3 = Color3.fromRGB(25,25,25)
-Boot.BorderSizePixel = 0
-Boot.Parent = BootGui
+local BootFrame = Instance.new("Frame")
+BootFrame.Size = UDim2.fromOffset(230,120)
+BootFrame.Position = UDim2.new(0.5,-115,0.5,-60)
+BootFrame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+BootFrame.BorderSizePixel = 0
+BootFrame.Parent = BootGui
 
-local Corner = Instance.new("UICorner")
-Corner.CornerRadius = UDim.new(0,10)
-Corner.Parent = Boot
+local BootCorner = Instance.new("UICorner")
+BootCorner.CornerRadius = UDim.new(0,10)
+BootCorner.Parent = BootFrame
 
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1,0,0,30)
-Title.Position = UDim2.fromOffset(0,12)
-Title.BackgroundTransparency = 1
-Title.Text = "Mini Library"
-Title.TextColor3 = Color3.new(1,1,1)
-Title.Font = Enum.Font.SourceSansBold
-Title.TextSize = 22
-Title.Parent = Boot
-
-local Status = Instance.new("TextLabel")
-Status.Size = UDim2.new(1,0,0,20)
-Status.Position = UDim2.fromOffset(0,45)
-Status.BackgroundTransparency = 1
-Status.Text = "Booting up..."
-Status.TextColor3 = Color3.fromRGB(190,190,190)
-Status.Font = Enum.Font.SourceSans
-Status.TextSize = 16
-Status.Parent = Boot
+local BootText = Instance.new("TextLabel")
+BootText.Size = UDim2.new(1,0,0,30)
+BootText.Position = UDim2.fromOffset(0,20)
+BootText.BackgroundTransparency = 1
+BootText.Text = "Booting up..."
+BootText.TextColor3 = Color3.new(1,1,1)
+BootText.Font = Enum.Font.SourceSansBold
+BootText.TextSize = 22
+BootText.Parent = BootFrame
 
 local BarBack = Instance.new("Frame")
 BarBack.Size = UDim2.fromOffset(190,7)
-BarBack.Position = UDim2.new(0.5,-95,0,82)
+BarBack.Position = UDim2.new(0.5,-95,0,70)
 BarBack.BackgroundColor3 = Color3.fromRGB(50,50,50)
 BarBack.BorderSizePixel = 0
-BarBack.Parent = Boot
-
-local BarCorner = Instance.new("UICorner")
-BarCorner.CornerRadius = UDim.new(1,0)
-BarCorner.Parent = BarBack
+BarBack.Parent = BootFrame
 
 local Bar = Instance.new("Frame")
 Bar.Size = UDim2.new(0,0,1,0)
@@ -71,68 +48,89 @@ Bar.BackgroundColor3 = Color3.fromRGB(110,110,110)
 Bar.BorderSizePixel = 0
 Bar.Parent = BarBack
 
-local BarFillCorner = Instance.new("UICorner")
-BarFillCorner.CornerRadius = UDim.new(1,0)
-BarFillCorner.Parent = Bar
-
---==================================================
--- BOOT
---==================================================
-
-local Progress = TweenService:Create(
+TweenService:Create(
 	Bar,
-	TweenInfo.new(2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-	{
-		Size = UDim2.new(1,0,1,0)
-	}
-)
+	TweenInfo.new(2, Enum.EasingStyle.Quad),
+	{Size = UDim2.new(1,0,1,0)}
+):Play()
 
-Progress:Play()
+task.wait(2)
 
-task.wait(0.5)
-Status.Text = "Loading library..."
-
-task.wait(0.6)
-Status.Text = "Loading components..."
-
-task.wait(0.6)
-Status.Text = "Almost ready..."
-
-Progress.Completed:Wait()
-
-Status.Text = "Ready!"
-
-task.wait(0.4)
-
---==================================================
--- LOAD WINDOW LIBRARY
---==================================================
-
-local Library = loadstring(game:HttpGet(
-	"https://raw.githubusercontent.com/DodoBallls/very-very-gud-UI-library-trust/refs/heads/main/Window"
-))()
-
--- Remove boot screen
 BootGui:Destroy()
 
 --==================================================
--- CREATE YOUR WINDOW
+-- WINDOW TEMPLATE
 --==================================================
 
-local Window = Library:CreateWindow("My UI")
+function Library:CreateWindow(Name)
 
---==================================================
--- NOW YOU CAN ADD ELEMENTS
---==================================================
+	local ScreenGui = Instance.new("ScreenGui")
+	ScreenGui.Name = "MiniLibrary"
+	ScreenGui.ResetOnSpawn = false
+	ScreenGui.Parent = CoreGui
 
-Window:CreateButton("HiExample", 1, function()
-	print("HiExample clicked!")
-end)
+	local Frame = Instance.new("Frame")
+	Frame.Name = "Window"
+	Frame.Size = UDim2.fromOffset(170,185)
+	Frame.Position = UDim2.new(0.5,-85,0.5,-92)
+	Frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
+	Frame.BorderSizePixel = 0
+	Frame.Parent = ScreenGui
 
-Window:CreateToggle("Example Toggle", 2, false, function(Value)
-	print("Toggle:", Value)
-end)
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(0,8)
+	Corner.Parent = Frame
 
-Window:CreateSlider("Example Slider", 3, 0, 100, 50, function(Value)
-	print("Slider:", Value)
-end)
+	local Title = Instance.new("TextLabel")
+	Title.Size = UDim2.new(1,0,0,25)
+	Title.BackgroundTransparency = 1
+	Title.Text = Name or "Mini Library"
+	Title.TextColor3 = Color3.new(1,1,1)
+	Title.Font = Enum.Font.SourceSansBold
+	Title.TextSize = 20
+	Title.Parent = Frame
+
+	local Layout = Instance.new("UIListLayout")
+	Layout.Padding = UDim.new(0,5)
+	Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	Layout.VerticalAlignment = Enum.VerticalAlignment.Top
+	Layout.Parent = Frame
+
+	local Window = {}
+
+	Window.Frame = Frame
+	Window.ScreenGui = ScreenGui
+
+	--==================================================
+	-- BUTTON TEMPLATE
+	--==================================================
+
+	function Window:CreateButton(Name, Order, Callback)
+
+		local Button = Instance.new("TextButton")
+		Button.Size = UDim2.fromOffset(150,25)
+		Button.BackgroundColor3 = Color3.fromRGB(60,60,60)
+		Button.TextColor3 = Color3.new(1,1,1)
+		Button.Text = Name
+		Button.Font = Enum.Font.SourceSansBold
+		Button.TextSize = 18
+		Button.LayoutOrder = Order or 1
+		Button.Parent = Frame
+
+		local C = Instance.new("UICorner")
+		C.CornerRadius = UDim.new(0,6)
+		C.Parent = Button
+
+		Button.MouseButton1Click:Connect(function()
+			if Callback then
+				Callback()
+			end
+		end)
+
+		return Button
+	end
+
+	return Window
+end
+
+return Library
