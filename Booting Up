@@ -1,7 +1,9 @@
---Booting Up
+--// Very Very Gud UI Library
+--// Booting Up
 
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
+local UIS = game:GetService("UserInputService")
 
 local Library = {}
 
@@ -42,16 +44,26 @@ BarBack.BackgroundColor3 = Color3.fromRGB(50,50,50)
 BarBack.BorderSizePixel = 0
 BarBack.Parent = BootFrame
 
+local BarCorner = Instance.new("UICorner")
+BarCorner.CornerRadius = UDim.new(1,0)
+BarCorner.Parent = BarBack
+
 local Bar = Instance.new("Frame")
 Bar.Size = UDim2.new(0,0,1,0)
 Bar.BackgroundColor3 = Color3.fromRGB(110,110,110)
 Bar.BorderSizePixel = 0
 Bar.Parent = BarBack
 
+local BarFillCorner = Instance.new("UICorner")
+BarFillCorner.CornerRadius = UDim.new(1,0)
+BarFillCorner.Parent = Bar
+
 TweenService:Create(
 	Bar,
-	TweenInfo.new(2, Enum.EasingStyle.Quad),
-	{Size = UDim2.new(1,0,1,0)}
+	TweenInfo.new(2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+	{
+		Size = UDim2.new(1,0,1,0)
+	}
 ):Play()
 
 task.wait(2)
@@ -64,42 +76,224 @@ BootGui:Destroy()
 
 function Library:CreateWindow(Name)
 
+	--==================================================
+	-- SCREEN GUI
+	--==================================================
+
 	local ScreenGui = Instance.new("ScreenGui")
 	ScreenGui.Name = "MiniLibrary"
 	ScreenGui.ResetOnSpawn = false
 	ScreenGui.Parent = CoreGui
 
+	--==================================================
+	-- MAIN WINDOW
+	--==================================================
+
 	local Frame = Instance.new("Frame")
 	Frame.Name = "Window"
-	Frame.Size = UDim2.fromOffset(170,185)
-	Frame.Position = UDim2.new(0.5,-85,0.5,-92)
+	Frame.Size = UDim2.fromOffset(165,185)
+	Frame.Position = UDim2.new(0.5,-82,0.5,-92)
 	Frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
 	Frame.BorderSizePixel = 0
+	Frame.ClipsDescendants = true
+	Frame.Active = true
 	Frame.Parent = ScreenGui
 
 	local Corner = Instance.new("UICorner")
 	Corner.CornerRadius = UDim.new(0,8)
 	Corner.Parent = Frame
 
+	--==================================================
+	-- TOP BAR
+	--==================================================
+
+	local TopBar = Instance.new("Frame")
+	TopBar.Name = "TopBar"
+	TopBar.Size = UDim2.new(1,0,0,25)
+	TopBar.BackgroundTransparency = 1
+	TopBar.Active = true
+	TopBar.Parent = Frame
+
+	--==================================================
+	-- MINIMIZE BUTTON
+	--==================================================
+
+	local Minimize = Instance.new("TextButton")
+	Minimize.Name = "Minimize"
+	Minimize.Size = UDim2.fromOffset(25,25)
+	Minimize.Position = UDim2.fromOffset(0,0)
+	Minimize.BackgroundTransparency = 1
+	Minimize.Text = "−"
+	Minimize.TextColor3 = Color3.new(1,1,1)
+	Minimize.Font = Enum.Font.SourceSansBold
+	Minimize.TextSize = 22
+	Minimize.AutoButtonColor = false
+	Minimize.Parent = TopBar
+
+	--==================================================
+	-- TITLE
+	--==================================================
+
 	local Title = Instance.new("TextLabel")
-	Title.Size = UDim2.new(1,0,0,25)
+	Title.Name = "Title"
+	Title.Size = UDim2.new(1,-50,1,0)
+	Title.Position = UDim2.fromOffset(30,0)
 	Title.BackgroundTransparency = 1
 	Title.Text = Name or "Mini Library"
 	Title.TextColor3 = Color3.new(1,1,1)
 	Title.Font = Enum.Font.SourceSansBold
 	Title.TextSize = 20
-	Title.Parent = Frame
+	Title.TextXAlignment = Enum.TextXAlignment.Center
+	Title.Parent = TopBar
+
+	--==================================================
+	-- CONTENT
+	--==================================================
+
+	local Content = Instance.new("Frame")
+	Content.Name = "Content"
+	Content.Size = UDim2.new(1,0,1,-25)
+	Content.Position = UDim2.fromOffset(0,25)
+	Content.BackgroundTransparency = 1
+	Content.Parent = Frame
 
 	local Layout = Instance.new("UIListLayout")
 	Layout.Padding = UDim.new(0,5)
 	Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	Layout.VerticalAlignment = Enum.VerticalAlignment.Top
-	Layout.Parent = Frame
+	Layout.Parent = Content
+
+	--==================================================
+	-- DRAGGING
+	--==================================================
+
+	local Dragging = false
+	local DragStart
+	local StartPosition
+
+	TopBar.InputBegan:Connect(function(Input)
+
+		if Input.UserInputType == Enum.UserInputType.MouseButton1
+		or Input.UserInputType == Enum.UserInputType.Touch then
+
+			Dragging = true
+			DragStart = Input.Position
+			StartPosition = Frame.Position
+
+			Input.Changed:Connect(function()
+
+				if Input.UserInputState == Enum.UserInputState.End then
+					Dragging = false
+				end
+
+			end)
+
+		end
+
+	end)
+
+	UIS.InputChanged:Connect(function(Input)
+
+		if not Dragging then
+			return
+		end
+
+		if Input.UserInputType == Enum.UserInputType.MouseMovement
+		or Input.UserInputType == Enum.UserInputType.Touch then
+
+			local Delta = Input.Position - DragStart
+
+			Frame.Position = UDim2.new(
+				StartPosition.X.Scale,
+				StartPosition.X.Offset + Delta.X,
+
+				StartPosition.Y.Scale,
+				StartPosition.Y.Offset + Delta.Y
+			)
+
+		end
+
+	end)
+
+	--==================================================
+	-- MINIMIZE / RESTORE
+	--==================================================
+
+	local Minimized = false
+
+	Minimize.MouseEnter:Connect(function()
+
+		TweenService:Create(
+			Minimize,
+			TweenInfo.new(0.12),
+			{
+				TextTransparency = 0.25
+			}
+		):Play()
+
+	end)
+
+	Minimize.MouseLeave:Connect(function()
+
+		TweenService:Create(
+			Minimize,
+			TweenInfo.new(0.12),
+			{
+				TextTransparency = 0
+			}
+		):Play()
+
+	end)
+
+	Minimize.MouseButton1Click:Connect(function()
+
+		Minimized = not Minimized
+
+		if Minimized then
+
+			Minimize.Text = "+"
+
+			TweenService:Create(
+				Frame,
+				TweenInfo.new(
+					0.3,
+					Enum.EasingStyle.Quint,
+					Enum.EasingDirection.Out
+				),
+				{
+					Size = UDim2.fromOffset(165,25)
+				}
+			):Play()
+
+		else
+
+			Minimize.Text = "−"
+
+			TweenService:Create(
+				Frame,
+				TweenInfo.new(
+					0.35,
+					Enum.EasingStyle.Back,
+					Enum.EasingDirection.Out
+				),
+				{
+					Size = UDim2.fromOffset(165,185)
+				}
+			):Play()
+
+		end
+
+	end)
+
+	--==================================================
+	-- WINDOW OBJECT
+	--==================================================
 
 	local Window = {}
 
 	Window.Frame = Frame
 	Window.ScreenGui = ScreenGui
+	Window.Content = Content
 
 	--==================================================
 	-- BUTTON TEMPLATE
@@ -108,23 +302,82 @@ function Library:CreateWindow(Name)
 	function Window:CreateButton(Name, Order, Callback)
 
 		local Button = Instance.new("TextButton")
-		Button.Size = UDim2.fromOffset(150,25)
+
+		Button.Size = UDim2.fromOffset(145,25)
 		Button.BackgroundColor3 = Color3.fromRGB(60,60,60)
 		Button.TextColor3 = Color3.new(1,1,1)
 		Button.Text = Name
 		Button.Font = Enum.Font.SourceSansBold
 		Button.TextSize = 18
 		Button.LayoutOrder = Order or 1
-		Button.Parent = Frame
+		Button.AutoButtonColor = false
+		Button.Parent = Content
 
 		local C = Instance.new("UICorner")
 		C.CornerRadius = UDim.new(0,6)
 		C.Parent = Button
 
+		-- Hover
+		Button.MouseEnter:Connect(function()
+
+			TweenService:Create(
+				Button,
+				TweenInfo.new(0.15),
+				{
+					BackgroundColor3 = Color3.fromRGB(75,75,75)
+				}
+			):Play()
+
+		end)
+
+		Button.MouseLeave:Connect(function()
+
+			TweenService:Create(
+				Button,
+				TweenInfo.new(0.15),
+				{
+					BackgroundColor3 = Color3.fromRGB(60,60,60)
+				}
+			):Play()
+
+		end)
+
+		-- Press
+		Button.MouseButton1Down:Connect(function()
+
+			TweenService:Create(
+				Button,
+				TweenInfo.new(0.08),
+				{
+					Size = UDim2.fromOffset(140,23)
+				}
+			):Play()
+
+		end)
+
+		Button.MouseButton1Up:Connect(function()
+
+			TweenService:Create(
+				Button,
+				TweenInfo.new(
+					0.12,
+					Enum.EasingStyle.Back,
+					Enum.EasingDirection.Out
+				),
+				{
+					Size = UDim2.fromOffset(145,25)
+				}
+			):Play()
+
+		end)
+
+		-- Callback
 		Button.MouseButton1Click:Connect(function()
+
 			if Callback then
-				Callback()
+				task.spawn(Callback)
 			end
+
 		end)
 
 		return Button
