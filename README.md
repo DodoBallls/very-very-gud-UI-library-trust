@@ -1,98 +1,115 @@
-🚀 Very Very Gud UI Library
+✨ Very Very Gud UI Library
 
-A simple Roblox UI library with a built-in Booting Up animation and a reusable Window template.
+<p align="center">
+  <strong>A lightweight Roblox UI library with a smooth boot-up animation and simple UI creation.</strong>
+</p><p align="center">
+  <img src="https://img.shields.io/badge/Roblox-Luau-blue?style=for-the-badge&logo=roblox" alt="Roblox">
+  <img src="https://img.shields.io/badge/UI-Library-purple?style=for-the-badge" alt="UI Library">
+  <img src="https://img.shields.io/badge/Mobile-Friendly-green?style=for-the-badge" alt="Mobile Friendly">
+</p>---
 
-📦 Booting Up
+🌟 Features
 
-The only library file you need is Booting Up.
-
-It contains:
-
-- ⚡ Boot-up animation
-- 🪟 "CreateWindow()" template
-- 🔘 "CreateButton()" template
-
-🔗 Booting Up
-
-"Booting Up Library" (https://reference-url-citation.invalid/0)
+Feature| Available
+🚀 Boot-up animation| ✅
+🪟 Window template| ✅
+🔘 Buttons| ✅
+🎨 Animated UI| ✅
+📱 Mobile friendly| ✅
+🧩 Easy API| ✅
 
 ---
 
-⚡ Quick Start
+📥 Installation
 
-Load the library:
+The library uses Booting Up as its main entry point.
+
+🔗 Booting Up
+
+"Open Booting Up" (https://raw.githubusercontent.com/DodoBallls/very-very-gud-UI-library-trust/refs/heads/main/Booting%20Up)
+
+You only need to load this file.
+
+---
+
+🚀 Quick Start
+
+Paste this into your script:
 
 local Library = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/DodoBallls/very-very-gud-UI-library-trust/refs/heads/main/Booting%20Up"
 ))()
 
-After the boot animation finishes, create your window:
-
 local Window = Library:CreateWindow("My UI")
-
-Then add elements:
 
 Window:CreateButton("Hello", 1, function()
     print("Hello!")
 end)
 
+«💡 Tip: GitHub automatically adds a Copy button to the top-right of code blocks.»
+
 ---
 
-🪟 Create a Window
+🪟 Creating a Window
 
-The "CreateWindow()" template is already inside Booting Up.
+The "CreateWindow()" template is already included inside Booting Up.
 
-You only need to call it from your own script:
+You call it from your own script:
 
 local Window = Library:CreateWindow("My UI")
 
-Parameters
+Syntax
 
-CreateWindow(Name)
+Library:CreateWindow(Name)
 
-Parameter| Description
-"Name"| The title displayed on the window
+Example
 
-Example:
-
-local Window = Library:CreateWindow("My Cool UI")
+local Window = Library:CreateWindow("My Awesome UI")
 
 ---
 
-🔘 Create a Button
+🔘 Buttons
 
-Use:
+Buttons are created with:
 
-Window:CreateButton("HiExample", 1, function()
+Window:CreateButton("Example", 1, function()
     print("Button clicked!")
 end)
 
-Parameters
+📌 Parameters
 
-CreateButton(Name, Order, Callback)
+Parameter| Type| Description
+"Name"| String| Button's displayed name
+"Order"| Number| Position in the window
+"Callback"| Function| Runs when the button is clicked
 
-Parameter| Description
-"Name"| Button text
-"Order"| Button position
-"Callback"| Code executed when clicked
+Example
 
-Example:
+Window:CreateButton("Say Hello", 1, function()
+    print("Hello!")
+end)
 
-Window:CreateButton("Test", 1, function()
-    print("Test clicked!")
+Window:CreateButton("Test Button", 2, function()
+    print("Test!")
 end)
 
 ---
 
-📋 Complete Example
+🧪 Complete Example
 
-Copy this entire script:
+Here's a complete starter script:
+
+--// Load Library
 
 local Library = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/DodoBallls/very-very-gud-UI-library-trust/refs/heads/main/Booting%20Up"
 ))()
 
+--// Create Window
+
 local Window = Library:CreateWindow("My UI")
+
+--// Create Buttons
 
 Window:CreateButton("Hello", 1, function()
     print("Hello!")
@@ -102,34 +119,86 @@ Window:CreateButton("Test", 2, function()
     print("Test clicked!")
 end)
 
+Window:CreateButton("Another Button", 3, function()
+    print("Another button!")
+end)
+
 ---
 
-🧠 How It Works
+🧠 How The Library Works
 
-Your Script
-     │
-     ▼
-Booting Up
-     │
-     ├── Boot animation
-     │
-     └── CreateWindow() template
-              │
-              ▼
-       Your CreateWindow()
-              │
-              ▼
-            Window
-              │
-              ├── CreateButton()
-              ├── CreateButton()
-              └── More elements later
+                 ┌───────────────────┐
+                 │    Your Script    │
+                 └─────────┬─────────┘
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │    Booting Up     │
+                 │                   │
+                 │  🚀 Boot Animation│
+                 │  🪟 Window Template│
+                 └─────────┬─────────┘
+                           │
+                           ▼
+                 Library:CreateWindow()
+                           │
+                           ▼
+                 ┌───────────────────┐
+                 │       Window      │
+                 ├───────────────────┤
+                 │ 🔘 Button         │
+                 │ 🔘 Button         │
+                 │ 🔘 Button         │
+                 └───────────────────┘
 
-The important part is that Booting Up does not automatically create the window.
+The important part is:
 
-You decide when and what window to create:
+Booting Up contains the templates.
+
+It does not automatically decide what your window should be called.
+
+You decide:
 
 local Window = Library:CreateWindow("My UI")
+
+---
+
+🧩 API
+
+Window
+
+Library:CreateWindow("Window Name")
+
+Button
+
+Window:CreateButton(
+    "Button Name",
+    1,
+    function()
+        print("Clicked!")
+    end
+)
+
+---
+
+🎨 UI Design
+
+The library uses a compact dark interface with:
+
+- Rounded corners
+- Animated interactions
+- Small mobile-friendly controls
+- Draggable window
+- Simple API
+- Minimal setup
+
+---
+
+📱 Mobile Support
+
+The UI is designed to be usable on smaller screens.
+
+Touch input can be used for interacting with the interface, while the window can be dragged around the screen.
 
 ---
 
@@ -137,24 +206,25 @@ local Window = Library:CreateWindow("My UI")
 
 Booting Up
 
-"Open Booting Up Source" (https://reference-url-citation.invalid/1)
+"View Source" (https://raw.githubusercontent.com/DodoBallls/very-very-gud-UI-library-trust/refs/heads/main/Booting%20Up)
 
 ---
 
-📝 Notes
+🛠️ Roadmap
 
-- Load Booting Up first.
-- Wait for its boot animation to finish.
-- Use "Library:CreateWindow()" to create your window.
-- Use the returned "Window" object to create UI elements.
-- "Order" controls the order of elements inside the window.
+Planned UI components:
 
-More UI components can be added to the library later, such as:
+- [ ] 🔄 Toggle
+- [ ] 🎚️ Slider
+- [ ] 📝 Textbox
+- [ ] 📑 Tabs
+- [ ] 📂 Sections
+- [ ] 🔔 Notifications
+- [ ] 🎨 Theme system
+- [ ] ✨ More animations
 
-- 🔄 Toggles
-- 🎚️ Sliders
-- 📝 Textboxes
-- 📑 Tabs
-- 📂 Sections
-- 🔔 Notifications
-- 🎨 Themes
+---
+
+<p align="center">
+  <strong>Made for simple, clean Roblox interfaces ❤️</strong>
+</p>
