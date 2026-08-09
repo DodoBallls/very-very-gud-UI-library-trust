@@ -1,4 +1,4 @@
-"Booting Up"
+--Booting Up
 
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
