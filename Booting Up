@@ -112,6 +112,7 @@ function Library:CreateWindow(Name)
 	TopBar.Size = UDim2.new(1,0,0,25)
 	TopBar.BackgroundTransparency = 1
 	TopBar.Active = true
+	TopBar.ZIndex = 5
 	TopBar.Parent = Frame
 
 	--==================================================
@@ -128,6 +129,7 @@ function Library:CreateWindow(Name)
 	Minimize.Font = Enum.Font.SourceSansBold
 	Minimize.TextSize = 22
 	Minimize.AutoButtonColor = false
+	Minimize.ZIndex = 6
 	Minimize.Parent = TopBar
 
 	--==================================================
@@ -144,24 +146,52 @@ function Library:CreateWindow(Name)
 	Title.Font = Enum.Font.SourceSansBold
 	Title.TextSize = 20
 	Title.TextXAlignment = Enum.TextXAlignment.Center
+	Title.ZIndex = 6
 	Title.Parent = TopBar
 
 	--==================================================
-	-- CONTENT
+	-- SCROLLING CONTENT
 	--==================================================
 
-	local Content = Instance.new("Frame")
+	local Content = Instance.new("ScrollingFrame")
 	Content.Name = "Content"
-	Content.Size = UDim2.new(1,0,1,-25)
-	Content.Position = UDim2.fromOffset(0,25)
+	Content.Size = UDim2.new(1,-6,1,-31)
+	Content.Position = UDim2.fromOffset(3,28)
 	Content.BackgroundTransparency = 1
+	Content.BorderSizePixel = 0
+
+	-- Vertical scrolling
+	Content.ScrollingDirection = Enum.ScrollingDirection.Y
+
+	-- Smooth scrolling
+	Content.ScrollingEnabled = true
+	Content.ScrollBarThickness = 3
+	Content.ScrollBarImageColor3 = Color3.fromRGB(100,100,100)
+
+	-- Hide horizontal scrolling
+	Content.CanvasSize = UDim2.new(0,0,0,0)
+	Content.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+	Content.Active = true
+	Content.ZIndex = 2
 	Content.Parent = Frame
+
+	--==================================================
+	-- CONTENT LAYOUT
+	--==================================================
 
 	local Layout = Instance.new("UIListLayout")
 	Layout.Padding = UDim.new(0,5)
 	Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	Layout.VerticalAlignment = Enum.VerticalAlignment.Top
+	Layout.SortOrder = Enum.SortOrder.LayoutOrder
 	Layout.Parent = Content
+
+	-- Small padding around elements
+	local Padding = Instance.new("UIPadding")
+	Padding.PaddingTop = UDim.new(0,2)
+	Padding.PaddingBottom = UDim.new(0,5)
+	Padding.Parent = Content
 
 	--==================================================
 	-- DRAGGING
@@ -311,13 +341,17 @@ function Library:CreateWindow(Name)
 		Button.TextSize = 18
 		Button.LayoutOrder = Order or 1
 		Button.AutoButtonColor = false
+		Button.ZIndex = 3
 		Button.Parent = Content
 
 		local C = Instance.new("UICorner")
 		C.CornerRadius = UDim.new(0,6)
 		C.Parent = Button
 
-		-- Hover
+		--==================================================
+		-- HOVER
+		--==================================================
+
 		Button.MouseEnter:Connect(function()
 
 			TweenService:Create(
@@ -336,13 +370,17 @@ function Library:CreateWindow(Name)
 				Button,
 				TweenInfo.new(0.15),
 				{
-					BackgroundColor3 = Color3.fromRGB(60,60,60)
+					BackgroundColor3 = Color3.fromRGB(60,60,60),
+					Size = UDim2.fromOffset(145,25)
 				}
 			):Play()
 
 		end)
 
-		-- Press
+		--==================================================
+		-- PRESS
+		--==================================================
+
 		Button.MouseButton1Down:Connect(function()
 
 			TweenService:Create(
@@ -371,7 +409,10 @@ function Library:CreateWindow(Name)
 
 		end)
 
-		-- Callback
+		--==================================================
+		-- CALLBACK
+		--==================================================
+
 		Button.MouseButton1Click:Connect(function()
 
 			if Callback then
