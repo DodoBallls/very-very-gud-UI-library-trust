@@ -4,6 +4,7 @@
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local UIS = game:GetService("UserInputService")
+local TextService = game:GetService("TextService")
 
 local Library = {}
 
@@ -76,10 +77,6 @@ BootGui:Destroy()
 
 function Library:CreateWindow(Name)
 
-	--==================================================
-	-- SCREEN GUI
-	--==================================================
-
 	local ScreenGui = Instance.new("ScreenGui")
 	ScreenGui.Name = "MiniLibrary"
 	ScreenGui.ResetOnSpawn = false
@@ -112,11 +109,11 @@ function Library:CreateWindow(Name)
 	TopBar.Size = UDim2.new(1,0,0,25)
 	TopBar.BackgroundTransparency = 1
 	TopBar.Active = true
-	TopBar.ZIndex = 5
+	TopBar.ZIndex = 10
 	TopBar.Parent = Frame
 
 	--==================================================
-	-- MINIMIZE BUTTON
+	-- MINIMIZE
 	--==================================================
 
 	local Minimize = Instance.new("TextButton")
@@ -129,7 +126,7 @@ function Library:CreateWindow(Name)
 	Minimize.Font = Enum.Font.SourceSansBold
 	Minimize.TextSize = 22
 	Minimize.AutoButtonColor = false
-	Minimize.ZIndex = 6
+	Minimize.ZIndex = 11
 	Minimize.Parent = TopBar
 
 	--==================================================
@@ -146,7 +143,7 @@ function Library:CreateWindow(Name)
 	Title.Font = Enum.Font.SourceSansBold
 	Title.TextSize = 20
 	Title.TextXAlignment = Enum.TextXAlignment.Center
-	Title.ZIndex = 6
+	Title.ZIndex = 11
 	Title.Parent = TopBar
 
 	--==================================================
@@ -159,26 +156,15 @@ function Library:CreateWindow(Name)
 	Content.Position = UDim2.fromOffset(3,28)
 	Content.BackgroundTransparency = 1
 	Content.BorderSizePixel = 0
-
-	-- Vertical scrolling
 	Content.ScrollingDirection = Enum.ScrollingDirection.Y
-
-	-- Smooth scrolling
 	Content.ScrollingEnabled = true
 	Content.ScrollBarThickness = 3
 	Content.ScrollBarImageColor3 = Color3.fromRGB(100,100,100)
-
-	-- Hide horizontal scrolling
-	Content.CanvasSize = UDim2.new(0,0,0,0)
 	Content.AutomaticCanvasSize = Enum.AutomaticSize.Y
-
+	Content.CanvasSize = UDim2.new(0,0,0,0)
 	Content.Active = true
 	Content.ZIndex = 2
 	Content.Parent = Frame
-
-	--==================================================
-	-- CONTENT LAYOUT
-	--==================================================
 
 	local Layout = Instance.new("UIListLayout")
 	Layout.Padding = UDim.new(0,5)
@@ -187,7 +173,6 @@ function Library:CreateWindow(Name)
 	Layout.SortOrder = Enum.SortOrder.LayoutOrder
 	Layout.Parent = Content
 
-	-- Small padding around elements
 	local Padding = Instance.new("UIPadding")
 	Padding.PaddingTop = UDim.new(0,2)
 	Padding.PaddingBottom = UDim.new(0,5)
@@ -250,6 +235,7 @@ function Library:CreateWindow(Name)
 	--==================================================
 
 	local Minimized = false
+	local NormalHeight = 185
 
 	Minimize.MouseEnter:Connect(function()
 
@@ -291,7 +277,10 @@ function Library:CreateWindow(Name)
 					Enum.EasingDirection.Out
 				),
 				{
-					Size = UDim2.fromOffset(165,25)
+					Size = UDim2.fromOffset(
+						Frame.AbsoluteSize.X,
+						25
+					)
 				}
 			):Play()
 
@@ -307,7 +296,10 @@ function Library:CreateWindow(Name)
 					Enum.EasingDirection.Out
 				),
 				{
-					Size = UDim2.fromOffset(165,185)
+					Size = UDim2.fromOffset(
+						Frame.AbsoluteSize.X,
+						NormalHeight
+					)
 				}
 			):Play()
 
@@ -331,14 +323,59 @@ function Library:CreateWindow(Name)
 
 	function Window:CreateButton(Name, Order, Callback)
 
+		Name = tostring(Name or "Button")
+
+		-- Calculate how wide the text needs to be
+		local TextBounds = TextService:GetTextSize(
+			Name,
+			18,
+			Enum.Font.SourceSansBold,
+			Vector2.new(1000,25)
+		)
+
+		local RequiredWidth = TextBounds.X + 40
+
+		-- Minimum width = 165
+		local TargetWidth = math.max(165, RequiredWidth)
+
+		-- Maximum width prevents ridiculously huge windows
+		local MaxWidth = 400
+		TargetWidth = math.min(TargetWidth, MaxWidth)
+
+		-- Resize window if necessary
+		if TargetWidth > Frame.AbsoluteSize.X then
+
+			TweenService:Create(
+				Frame,
+				TweenInfo.new(
+					0.25,
+					Enum.EasingStyle.Quint,
+					Enum.EasingDirection.Out
+				),
+				{
+					Size = UDim2.fromOffset(
+						TargetWidth,
+						Frame.AbsoluteSize.Y
+					)
+				}
+			):Play()
+
+		end
+
+		--==================================================
+		-- BUTTON
+		--==================================================
+
 		local Button = Instance.new("TextButton")
 
-		Button.Size = UDim2.fromOffset(145,25)
+		Button.Size = UDim2.new(1,-10,0,25)
 		Button.BackgroundColor3 = Color3.fromRGB(60,60,60)
 		Button.TextColor3 = Color3.new(1,1,1)
 		Button.Text = Name
 		Button.Font = Enum.Font.SourceSansBold
 		Button.TextSize = 18
+		Button.TextWrapped = false
+		Button.TextTruncate = Enum.TextTruncate.None
 		Button.LayoutOrder = Order or 1
 		Button.AutoButtonColor = false
 		Button.ZIndex = 3
@@ -371,7 +408,7 @@ function Library:CreateWindow(Name)
 				TweenInfo.new(0.15),
 				{
 					BackgroundColor3 = Color3.fromRGB(60,60,60),
-					Size = UDim2.fromOffset(145,25)
+					Size = UDim2.new(1,-10,0,25)
 				}
 			):Play()
 
@@ -387,7 +424,7 @@ function Library:CreateWindow(Name)
 				Button,
 				TweenInfo.new(0.08),
 				{
-					Size = UDim2.fromOffset(140,23)
+					Size = UDim2.new(1,-15,0,23)
 				}
 			):Play()
 
@@ -403,7 +440,7 @@ function Library:CreateWindow(Name)
 					Enum.EasingDirection.Out
 				),
 				{
-					Size = UDim2.fromOffset(145,25)
+					Size = UDim2.new(1,-10,0,25)
 				}
 			):Play()
 
