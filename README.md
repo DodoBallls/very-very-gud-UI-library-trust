@@ -26,9 +26,7 @@ A lightweight Roblox UI library with a built-in boot animation, draggable window
 ## 📦 Load The Library
 
 ```lua
-local Library = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/DodoBallls/very-very-gud-UI-library-trust/refs/heads/main/Booting%20Up"
-))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/DodoBallls/very-very-gud-UI-library-trust/refs/heads/main/Booting%20Up"))()
 ```
 
 The **Booting Up** file contains the library itself.
