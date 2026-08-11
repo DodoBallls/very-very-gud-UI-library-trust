@@ -4,7 +4,6 @@
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local UIS = game:GetService("UserInputService")
-local TextService = game:GetService("TextService")
 
 local Library = {}
 
@@ -45,9 +44,9 @@ BarBack.BackgroundColor3 = Color3.fromRGB(50,50,50)
 BarBack.BorderSizePixel = 0
 BarBack.Parent = BootFrame
 
-local BarCorner = Instance.new("UICorner")
-BarCorner.CornerRadius = UDim.new(1,0)
-BarCorner.Parent = BarBack
+local BarBackCorner = Instance.new("UICorner")
+BarBackCorner.CornerRadius = UDim.new(1,0)
+BarBackCorner.Parent = BarBack
 
 local Bar = Instance.new("Frame")
 Bar.Size = UDim2.new(0,0,1,0)
@@ -55,9 +54,9 @@ Bar.BackgroundColor3 = Color3.fromRGB(110,110,110)
 Bar.BorderSizePixel = 0
 Bar.Parent = BarBack
 
-local BarCorner2 = Instance.new("UICorner")
-BarCorner2.CornerRadius = UDim.new(1,0)
-BarCorner2.Parent = Bar
+local BarCorner = Instance.new("UICorner")
+BarCorner.CornerRadius = UDim.new(1,0)
+BarCorner.Parent = Bar
 
 TweenService:Create(
 	Bar,
@@ -77,13 +76,23 @@ BootGui:Destroy()
 
 function Library:CreateWindow(Name)
 
+	local Old = CoreGui:FindFirstChild("MiniLibrary")
+
+	if Old then
+		Old:Destroy()
+	end
+
+	--==================================================
+	-- SCREEN GUI
+	--==================================================
+
 	local ScreenGui = Instance.new("ScreenGui")
 	ScreenGui.Name = "MiniLibrary"
 	ScreenGui.ResetOnSpawn = false
 	ScreenGui.Parent = CoreGui
 
 	--==================================================
-	-- MAIN FRAME
+	-- MAIN WINDOW
 	--==================================================
 
 	local Frame = Instance.new("Frame")
@@ -105,10 +114,10 @@ function Library:CreateWindow(Name)
 	--==================================================
 
 	local TopBar = Instance.new("Frame")
+	TopBar.Name = "TopBar"
 	TopBar.Size = UDim2.new(1,0,0,25)
 	TopBar.BackgroundTransparency = 1
 	TopBar.Active = true
-	TopBar.ZIndex = 10
 	TopBar.Parent = Frame
 
 	--==================================================
@@ -116,14 +125,15 @@ function Library:CreateWindow(Name)
 	--==================================================
 
 	local Minimize = Instance.new("TextButton")
+	Minimize.Name = "Minimize"
 	Minimize.Size = UDim2.fromOffset(25,25)
+	Minimize.Position = UDim2.fromOffset(0,0)
 	Minimize.BackgroundTransparency = 1
 	Minimize.Text = "−"
 	Minimize.TextColor3 = Color3.new(1,1,1)
 	Minimize.Font = Enum.Font.SourceSansBold
 	Minimize.TextSize = 22
 	Minimize.AutoButtonColor = false
-	Minimize.ZIndex = 11
 	Minimize.Parent = TopBar
 
 	--==================================================
@@ -131,6 +141,7 @@ function Library:CreateWindow(Name)
 	--==================================================
 
 	local Title = Instance.new("TextLabel")
+	Title.Name = "Title"
 	Title.Size = UDim2.new(1,-50,1,0)
 	Title.Position = UDim2.fromOffset(30,0)
 	Title.BackgroundTransparency = 1
@@ -139,7 +150,7 @@ function Library:CreateWindow(Name)
 	Title.Font = Enum.Font.SourceSansBold
 	Title.TextSize = 20
 	Title.TextXAlignment = Enum.TextXAlignment.Center
-	Title.ZIndex = 11
+	Title.TextTruncate = Enum.TextTruncate.AtEnd
 	Title.Parent = TopBar
 
 	--==================================================
@@ -148,25 +159,21 @@ function Library:CreateWindow(Name)
 
 	local Content = Instance.new("ScrollingFrame")
 	Content.Name = "Content"
-	Content.Size = UDim2.new(1,-6,1,-31)
-	Content.Position = UDim2.fromOffset(3,28)
+	Content.Size = UDim2.new(1,-6,1,-28)
+	Content.Position = UDim2.fromOffset(3,27)
 	Content.BackgroundTransparency = 1
 	Content.BorderSizePixel = 0
-	Content.ScrollingDirection = Enum.ScrollingDirection.Y
-	Content.ScrollingEnabled = true
-	Content.ScrollBarThickness = 3
+	Content.ScrollBarThickness = 4
 	Content.ScrollBarImageColor3 = Color3.fromRGB(100,100,100)
-	Content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	Content.CanvasSize = UDim2.new(0,0,0,0)
-	Content.Active = true
-	Content.ZIndex = 2
+	Content.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	Content.ScrollingDirection = Enum.ScrollingDirection.Y
 	Content.Parent = Frame
 
 	local Layout = Instance.new("UIListLayout")
 	Layout.Padding = UDim.new(0,5)
 	Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	Layout.VerticalAlignment = Enum.VerticalAlignment.Top
-	Layout.SortOrder = Enum.SortOrder.LayoutOrder
 	Layout.Parent = Content
 
 	local Padding = Instance.new("UIPadding")
@@ -231,7 +238,30 @@ function Library:CreateWindow(Name)
 	--==================================================
 
 	local Minimized = false
-	local NormalHeight = 185
+
+	Minimize.MouseEnter:Connect(function()
+
+		TweenService:Create(
+			Minimize,
+			TweenInfo.new(0.12),
+			{
+				TextTransparency = 0.25
+			}
+		):Play()
+
+	end)
+
+	Minimize.MouseLeave:Connect(function()
+
+		TweenService:Create(
+			Minimize,
+			TweenInfo.new(0.12),
+			{
+				TextTransparency = 0
+			}
+		):Play()
+
+	end)
 
 	Minimize.MouseButton1Click:Connect(function()
 
@@ -243,12 +273,13 @@ function Library:CreateWindow(Name)
 
 			TweenService:Create(
 				Frame,
-				TweenInfo.new(0.3, Enum.EasingStyle.Quint),
+				TweenInfo.new(
+					0.3,
+					Enum.EasingStyle.Quint,
+					Enum.EasingDirection.Out
+				),
 				{
-					Size = UDim2.fromOffset(
-						Frame.AbsoluteSize.X,
-						25
-					)
+					Size = UDim2.fromOffset(165,25)
 				}
 			):Play()
 
@@ -264,10 +295,7 @@ function Library:CreateWindow(Name)
 					Enum.EasingDirection.Out
 				),
 				{
-					Size = UDim2.fromOffset(
-						Frame.AbsoluteSize.X,
-						NormalHeight
-					)
+					Size = UDim2.fromOffset(165,185)
 				}
 			):Play()
 
@@ -291,44 +319,18 @@ function Library:CreateWindow(Name)
 
 	function Window:CreateButton(Name, Order, Callback)
 
-		Name = tostring(Name or "Button")
-
-		local Bounds = TextService:GetTextSize(
-			Name,
-			18,
-			Enum.Font.SourceSansBold,
-			Vector2.new(1000,25)
-		)
-
-		local TargetWidth = math.max(165, Bounds.X + 40)
-		TargetWidth = math.min(TargetWidth, 400)
-
-		if TargetWidth > Frame.AbsoluteSize.X then
-
-			TweenService:Create(
-				Frame,
-				TweenInfo.new(0.25, Enum.EasingStyle.Quint),
-				{
-					Size = UDim2.fromOffset(
-						TargetWidth,
-						Frame.AbsoluteSize.Y
-					)
-				}
-			):Play()
-
-		end
-
 		local Button = Instance.new("TextButton")
-		Button.Size = UDim2.new(1,-10,0,25)
+
+		Button.Size = UDim2.fromOffset(145,25)
 		Button.BackgroundColor3 = Color3.fromRGB(60,60,60)
 		Button.TextColor3 = Color3.new(1,1,1)
 		Button.Text = Name
 		Button.Font = Enum.Font.SourceSansBold
 		Button.TextSize = 18
-		Button.TextWrapped = false
 		Button.LayoutOrder = Order or 1
 		Button.AutoButtonColor = false
-		Button.ZIndex = 3
+		Button.TextWrapped = false
+		Button.TextTruncate = Enum.TextTruncate.AtEnd
 		Button.Parent = Content
 
 		local C = Instance.new("UICorner")
@@ -353,8 +355,7 @@ function Library:CreateWindow(Name)
 				Button,
 				TweenInfo.new(0.15),
 				{
-					BackgroundColor3 = Color3.fromRGB(60,60,60),
-					Size = UDim2.new(1,-10,0,25)
+					BackgroundColor3 = Color3.fromRGB(60,60,60)
 				}
 			):Play()
 
@@ -366,7 +367,7 @@ function Library:CreateWindow(Name)
 				Button,
 				TweenInfo.new(0.08),
 				{
-					Size = UDim2.new(1,-15,0,23)
+					Size = UDim2.fromOffset(140,23)
 				}
 			):Play()
 
@@ -376,9 +377,13 @@ function Library:CreateWindow(Name)
 
 			TweenService:Create(
 				Button,
-				TweenInfo.new(0.12, Enum.EasingStyle.Back),
+				TweenInfo.new(
+					0.12,
+					Enum.EasingStyle.Back,
+					Enum.EasingDirection.Out
+				),
 				{
-					Size = UDim2.new(1,-10,0,25)
+					Size = UDim2.fromOffset(145,25)
 				}
 			):Play()
 
@@ -401,91 +406,91 @@ function Library:CreateWindow(Name)
 
 	function Window:CreateToggle(Name, Order, Default, Callback)
 
-		local Enabled = Default == true
+		local ToggleFrame = Instance.new("TextButton")
 
-		local Toggle = Instance.new("TextButton")
-		Toggle.Size = UDim2.new(1,-10,0,30)
-		Toggle.BackgroundColor3 = Color3.fromRGB(60,60,60)
-		Toggle.Text = Name
-		Toggle.TextColor3 = Color3.new(1,1,1)
-		Toggle.Font = Enum.Font.SourceSansBold
-		Toggle.TextSize = 18
-		Toggle.TextXAlignment = Enum.TextXAlignment.Left
-		Toggle.LayoutOrder = Order or 1
-		Toggle.AutoButtonColor = false
-		Toggle.ZIndex = 3
-		Toggle.Parent = Content
-
-		local Padding = Instance.new("UIPadding")
-		Padding.PaddingLeft = UDim.new(0,8)
-		Padding.Parent = Toggle
+		ToggleFrame.Size = UDim2.fromOffset(145,28)
+		ToggleFrame.BackgroundColor3 = Color3.fromRGB(60,60,60)
+		ToggleFrame.Text = ""
+		ToggleFrame.AutoButtonColor = false
+		ToggleFrame.LayoutOrder = Order or 1
+		ToggleFrame.Parent = Content
 
 		local C = Instance.new("UICorner")
 		C.CornerRadius = UDim.new(0,6)
-		C.Parent = Toggle
+		C.Parent = ToggleFrame
 
-		local Indicator = Instance.new("Frame")
-		Indicator.Size = UDim2.fromOffset(36,18)
-		Indicator.Position = UDim2.new(1,-44,0.5,-9)
-		Indicator.BorderSizePixel = 0
-		Indicator.Parent = Toggle
+		local Label = Instance.new("TextLabel")
 
-		local IC = Instance.new("UICorner")
-		IC.CornerRadius = UDim.new(1,0)
-		IC.Parent = Indicator
+		Label.Size = UDim2.new(1,-40,1,0)
+		Label.Position = UDim2.fromOffset(8,0)
+		Label.BackgroundTransparency = 1
+		Label.Text = Name
+		Label.TextColor3 = Color3.new(1,1,1)
+		Label.Font = Enum.Font.SourceSansBold
+		Label.TextSize = 16
+		Label.TextXAlignment = Enum.TextXAlignment.Left
+		Label.TextTruncate = Enum.TextTruncate.AtEnd
+		Label.Parent = ToggleFrame
 
-		local Circle = Instance.new("Frame")
-		Circle.Size = UDim2.fromOffset(14,14)
-		Circle.AnchorPoint = Vector2.new(0,0.5)
-		Circle.Position = Enabled
-			and UDim2.new(1,-16,0.5,0)
-			or UDim2.fromOffset(2,9)
-		Circle.BackgroundColor3 = Color3.new(1,1,1)
-		Circle.BorderSizePixel = 0
-		Circle.Parent = Indicator
+		local Switch = Instance.new("Frame")
 
-		local CC = Instance.new("UICorner")
-		CC.CornerRadius = UDim.new(1,0)
-		CC.Parent = Circle
+		Switch.Size = UDim2.fromOffset(30,16)
+		Switch.Position = UDim2.new(1,-37,0.5,-8)
+		Switch.BackgroundColor3 = Color3.fromRGB(45,45,45)
+		Switch.BorderSizePixel = 0
+		Switch.Parent = ToggleFrame
 
-		local function Update()
+		local SwitchCorner = Instance.new("UICorner")
+		SwitchCorner.CornerRadius = UDim.new(1,0)
+		SwitchCorner.Parent = Switch
+
+		local Knob = Instance.new("Frame")
+
+		Knob.Size = UDim2.fromOffset(12,12)
+		Knob.Position = UDim2.fromOffset(2,2)
+		Knob.BackgroundColor3 = Color3.fromRGB(220,220,220)
+		Knob.BorderSizePixel = 0
+		Knob.Parent = Switch
+
+		local KnobCorner = Instance.new("UICorner")
+		KnobCorner.CornerRadius = UDim.new(1,0)
+		KnobCorner.Parent = Knob
+
+		local Value = Default == true
+
+		local function UpdateToggle()
+
+			local TargetPosition
+
+			if Value then
+				TargetPosition = UDim2.fromOffset(16,2)
+			else
+				TargetPosition = UDim2.fromOffset(2,2)
+			end
 
 			TweenService:Create(
-				Indicator,
-				TweenInfo.new(0.15),
-				{
-					BackgroundColor3 = Enabled
-						and Color3.fromRGB(90,170,90)
-						or Color3.fromRGB(45,45,45)
-				}
-			):Play()
-
-			TweenService:Create(
-				Circle,
+				Knob,
 				TweenInfo.new(0.15, Enum.EasingStyle.Quad),
 				{
-					Position = Enabled
-						and UDim2.new(1,-16,0.5,0)
-						or UDim2.fromOffset(2,9)
+					Position = TargetPosition
 				}
 			):Play()
 
 			if Callback then
-				task.spawn(Callback, Enabled)
+				task.spawn(Callback, Value)
 			end
 
 		end
 
-		Update()
+		ToggleFrame.MouseButton1Click:Connect(function()
 
-		Toggle.MouseButton1Click:Connect(function()
+			Value = not Value
 
-			Enabled = not Enabled
-			Update()
+			UpdateToggle()
 
 		end)
 
-		return Toggle
+		return ToggleFrame
 	end
 
 	--==================================================
@@ -496,115 +501,151 @@ function Library:CreateWindow(Name)
 
 		Min = Min or 0
 		Max = Max or 100
-		Default = math.clamp(Default or Min, Min, Max)
 
-		local Slider = Instance.new("Frame")
-		Slider.Size = UDim2.new(1,-10,0,42)
-		Slider.BackgroundColor3 = Color3.fromRGB(60,60,60)
-		Slider.BorderSizePixel = 0
-		Slider.LayoutOrder = Order or 1
-		Slider.ZIndex = 3
-		Slider.Parent = Content
+		if Max <= Min then
+			Max = Min + 1
+		end
 
-		local C = Instance.new("UICorner")
-		C.CornerRadius = UDim.new(0,6)
-		C.Parent = Slider
+		Default = math.clamp(
+			Default or Min,
+			Min,
+			Max
+		)
+
+		local SliderFrame = Instance.new("Frame")
+
+		SliderFrame.Size = UDim2.fromOffset(145,43)
+		SliderFrame.BackgroundTransparency = 1
+		SliderFrame.LayoutOrder = Order or 1
+		SliderFrame.Parent = Content
+
+		--==================================================
+		-- SLIDER NAME
+		--==================================================
 
 		local Label = Instance.new("TextLabel")
-		Label.Size = UDim2.new(1,-55,0,20)
-		Label.Position = UDim2.fromOffset(7,2)
+
+		Label.Size = UDim2.new(1,-45,0,18)
+		Label.Position = UDim2.fromOffset(0,0)
 		Label.BackgroundTransparency = 1
 		Label.Text = Name
 		Label.TextColor3 = Color3.new(1,1,1)
 		Label.Font = Enum.Font.SourceSansBold
-		Label.TextSize = 17
+		Label.TextSize = 16
 		Label.TextXAlignment = Enum.TextXAlignment.Left
-		Label.Parent = Slider
+		Label.TextTruncate = Enum.TextTruncate.AtEnd
+		Label.Parent = SliderFrame
+
+		--==================================================
+		-- VALUE INDICATOR
+		--==================================================
 
 		local ValueLabel = Instance.new("TextLabel")
-		ValueLabel.Size = UDim2.fromOffset(45,20)
-		ValueLabel.Position = UDim2.new(1,-50,0,2)
+
+		ValueLabel.Size = UDim2.fromOffset(45,18)
+		ValueLabel.Position = UDim2.new(1,-45,0,0)
 		ValueLabel.BackgroundTransparency = 1
 		ValueLabel.Text = tostring(Default)
 		ValueLabel.TextColor3 = Color3.new(1,1,1)
 		ValueLabel.Font = Enum.Font.SourceSansBold
 		ValueLabel.TextSize = 16
-		ValueLabel.Parent = Slider
+		ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+		ValueLabel.Parent = SliderFrame
 
-		local Bar = Instance.new("Frame")
-		Bar.Size = UDim2.new(1,-14,0,7)
-		Bar.Position = UDim2.new(0,7,1,-12)
-		Bar.BackgroundColor3 = Color3.fromRGB(40,40,40)
-		Bar.BorderSizePixel = 0
-		Bar.Active = true
-		Bar.Parent = Slider
+		--==================================================
+		-- SLIDER BACK
+		--==================================================
 
-		local BC = Instance.new("UICorner")
-		BC.CornerRadius = UDim.new(1,0)
-		BC.Parent = Bar
+		local SliderBack = Instance.new("TextButton")
+
+		SliderBack.Size = UDim2.new(1,0,0,7)
+		SliderBack.Position = UDim2.fromOffset(0,28)
+		SliderBack.BackgroundColor3 = Color3.fromRGB(55,55,55)
+		SliderBack.BorderSizePixel = 0
+		SliderBack.Text = ""
+		SliderBack.AutoButtonColor = false
+		SliderBack.Parent = SliderFrame
+
+		local BackCorner = Instance.new("UICorner")
+		BackCorner.CornerRadius = UDim.new(1,0)
+		BackCorner.Parent = SliderBack
+
+		--==================================================
+		-- SLIDER FILL
+		--==================================================
+
+		local Percent = (Default - Min) / (Max - Min)
 
 		local Fill = Instance.new("Frame")
-		Fill.Size = UDim2.new(
-			(Default-Min)/(Max-Min),
-			0,
-			1,
-			0
-		)
+
+		Fill.Size = UDim2.new(Percent,0,1,0)
 		Fill.BackgroundColor3 = Color3.fromRGB(110,110,110)
 		Fill.BorderSizePixel = 0
-		Fill.Parent = Bar
+		Fill.Parent = SliderBack
 
-		local FC = Instance.new("UICorner")
-		FC.CornerRadius = UDim.new(1,0)
-		FC.Parent = Fill
+		local FillCorner = Instance.new("UICorner")
+		FillCorner.CornerRadius = UDim.new(1,0)
+		FillCorner.Parent = Fill
+
+		--==================================================
+		-- KNOB
+		--==================================================
 
 		local Knob = Instance.new("Frame")
+
 		Knob.Size = UDim2.fromOffset(13,13)
 		Knob.AnchorPoint = Vector2.new(0.5,0.5)
-		Knob.Position = UDim2.new(
-			(Default-Min)/(Max-Min),
-			0,
-			0.5,
-			0
-		)
-		Knob.BackgroundColor3 = Color3.new(1,1,1)
+		Knob.Position = UDim2.new(Percent,0,0.5,0)
+		Knob.BackgroundColor3 = Color3.fromRGB(230,230,230)
 		Knob.BorderSizePixel = 0
-		Knob.Parent = Bar
+		Knob.Parent = SliderBack
 
-		local KC = Instance.new("UICorner")
-		KC.CornerRadius = UDim.new(1,0)
-		KC.Parent = Knob
+		local KnobCorner = Instance.new("UICorner")
+		KnobCorner.CornerRadius = UDim.new(1,0)
+		KnobCorner.Parent = Knob
 
-		local Sliding = false
 		local Value = Default
+		local DraggingSlider = false
 
-		local function SetValue(NewValue)
+		--==================================================
+		-- SET VALUE
+		--==================================================
 
-			Value = math.clamp(
-				math.round(NewValue),
-				Min,
-				Max
+		local function SetValueFromX(X)
+
+			local Start = SliderBack.AbsolutePosition.X
+			local Width = SliderBack.AbsoluteSize.X
+
+			local NewPercent = math.clamp(
+				(X - Start) / Width,
+				0,
+				1
 			)
 
-			local Percent = (Value-Min)/(Max-Min)
+			Value = math.floor(
+				Min + ((Max - Min) * NewPercent) + 0.5
+			)
 
+			local FinalPercent =
+				(Value - Min) / (Max - Min)
+
+			Fill.Size = UDim2.new(
+				FinalPercent,
+				0,
+				1,
+				0
+			)
+
+			Knob.Position = UDim2.new(
+				FinalPercent,
+				0,
+				0.5,
+				0
+			)
+
+			-- IMPORTANT:
+			-- Update the number indicator
 			ValueLabel.Text = tostring(Value)
-
-			TweenService:Create(
-				Fill,
-				TweenInfo.new(0.08),
-				{
-					Size = UDim2.new(Percent,0,1,0)
-				}
-			):Play()
-
-			TweenService:Create(
-				Knob,
-				TweenInfo.new(0.08),
-				{
-					Position = UDim2.new(Percent,0,0.5,0)
-				}
-			):Play()
 
 			if Callback then
 				task.spawn(Callback, Value)
@@ -612,28 +653,18 @@ function Library:CreateWindow(Name)
 
 		end
 
-		local function UpdateFromInput(Input)
+		--==================================================
+		-- INPUT
+		--==================================================
 
-			local Percent = math.clamp(
-				(Input.Position.X - Bar.AbsolutePosition.X)
-				/ Bar.AbsoluteSize.X,
-				0,
-				1
-			)
-
-			SetValue(
-				Min + ((Max-Min) * Percent)
-			)
-
-		end
-
-		Bar.InputBegan:Connect(function(Input)
+		SliderBack.InputBegan:Connect(function(Input)
 
 			if Input.UserInputType == Enum.UserInputType.MouseButton1
 			or Input.UserInputType == Enum.UserInputType.Touch then
 
-				Sliding = true
-				UpdateFromInput(Input)
+				DraggingSlider = true
+
+				SetValueFromX(Input.Position.X)
 
 			end
 
@@ -641,14 +672,14 @@ function Library:CreateWindow(Name)
 
 		UIS.InputChanged:Connect(function(Input)
 
-			if not Sliding then
+			if not DraggingSlider then
 				return
 			end
 
 			if Input.UserInputType == Enum.UserInputType.MouseMovement
 			or Input.UserInputType == Enum.UserInputType.Touch then
 
-				UpdateFromInput(Input)
+				SetValueFromX(Input.Position.X)
 
 			end
 
@@ -659,13 +690,13 @@ function Library:CreateWindow(Name)
 			if Input.UserInputType == Enum.UserInputType.MouseButton1
 			or Input.UserInputType == Enum.UserInputType.Touch then
 
-				Sliding = false
+				DraggingSlider = false
 
 			end
 
 		end)
 
-		return Slider
+		return SliderFrame
 	end
 
 	return Window
